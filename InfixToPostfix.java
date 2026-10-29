@@ -30,6 +30,8 @@ public class InfixToPostfix {
      */
     private static int precedence(String op) {
         // TODO: return 2 for "*" and "/", 1 for "+" and "-", 0 otherwise
+        if (op.equals("*") || op.equals("/")) {return 2;}
+        else if (op.equals("+") || op.equals("-")) {return 1;}
         return 0;
     }
 
@@ -45,7 +47,8 @@ public class InfixToPostfix {
      */
     private static boolean isOperator(String token) {
         // TODO: return true if token equals "+", "-", "*", or "/"
-        return false;
+
+        return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/") ;
     }
 
     // ---------------------------------------------------------------
@@ -71,6 +74,29 @@ public class InfixToPostfix {
         Stack<String> stack = new Stack<>();
         StringBuilder output = new StringBuilder();
 
+        String[] toks = infix.split(" ");
+
+        for (String tok : toks) {
+            if (tok.equals("(")) {
+                stack.push(tok);
+
+            } else if (tok.equals(")")) {
+                while (!stack.isEmpty() && !stack.peek().equals("(")) {
+                    output.append(stack.pop()).append(" ");
+                }
+                stack.pop();
+            } else if (isOperator(tok)) {
+                while (!stack.isEmpty() && !stack.peek().equals("(") && precedence(stack.peek()) > precedence(tok)) {
+                    output.append(stack.pop()).append(" ");
+                }
+                stack.push(tok);
+            } else {
+                output.append(tok).append(" ");
+            }
+        }
+        while (!stack.isEmpty()) {
+            output.append(stack.pop()).append(" ");
+        }
 
         return output.toString().trim();
     }
